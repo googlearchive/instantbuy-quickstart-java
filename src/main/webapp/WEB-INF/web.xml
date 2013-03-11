@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<web-app
+        version="2.5"
+        xmlns="http://java.sun.com/xml/ns/javaee"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+    <servlet>
+        <servlet-name>MaskedWallet</servlet-name>
+        <servlet-class>com.instantbuy.quickstart.MaskedWalletServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>MaskedWallet</servlet-name>
+        <url-pattern>/masked-wallet</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>FullWallet</servlet-name>
+        <servlet-class>com.instantbuy.quickstart.FullWalletServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>FullWallet</servlet-name>
+        <url-pattern>/full-wallet</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>NotifyTransactionStatus</servlet-name>
+        <servlet-class>com.instantbuy.quickstart.NotifyTransactionStatusServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>NotifyTransactionStatus</servlet-name>
+        <url-pattern>/notify-transaction-status</url-pattern>
+    </servlet-mapping>
+
+    <welcome-file-list>
+        <welcome-file>index.html</welcome-file>
+    </welcome-file-list>
+</web-app>

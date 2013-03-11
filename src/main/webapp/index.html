@@ -1,0 +1,189 @@
+<html>
+ <head>
+   <title>Instant Buy Simple Demo</title>
+    <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+    <script type="text/javascript"
+      src="https://wallet-web.sandbox.google.com/online/v2/merchant/merchant.js"></script>
+   <script>
+    var OauthClientId = "Client Id";
+    
+    //Information for Masked Wallet request
+    var MaskedWalletJson = {
+      estimatedTotalPrice : "250.00",
+      currencyCode : "USD"
+    };
+    
+    //Json representation for items purchased
+    var FullWalletJson = {
+      currencyCode : "USD",
+      cart: {
+        currencyCode: "USD",      /*Renamed it to currencyCode it was called currency before*/
+        totalPrice: "287.52",
+        lineItems: [
+        {
+          description: "Fantastic shoe, model xyz",
+          quantity: 2,
+          unitPrice: "125.00",
+          totalPrice: "250.00",
+          isDigital: false
+        },
+        {
+          description: "Sales tax",
+          totalPrice: "22.18",
+          role: "TAX"
+        },
+        {
+          description: "Shipping via UPS",
+          totalPrice: "15.34",
+          role: "SHIPPING"
+        }]
+      }
+    };
+    
+    //Json representation for Transaction Status Json request.
+    var TransactionStatusJson = {};
+    
+    //Try to authorize for preauth
+    google.wallet.online.authorize({
+      "clientId": OauthClientId,
+      "callback": function(tokenObj){
+        console.log(tokenObj);
+      }
+    })
+    
+    //********Masked Wallet Request related functions********
+    //Handle the Jwt returned from the server and create the Wallet button
+    function handleMaskedWalletJwt(data){
+      updateStatus("Received Masked Wallet Jwt creating buy button");
+      display("jwt=" + data);
+      google.wallet.online.createWalletButton({
+        jwt : data,
+        success : maskedWalletSuccess,
+        failure : maskedWalletFailure,
+        ready : buttonReady
+      });
+    }
+    
+    //Callback for Masked Wallet success
+    function maskedWalletSuccess(response){
+      updateStatus("Masked Wallet success you can proceed to the Full Wallet Request");
+      display("maskedwallet=" + JSON.stringify(response, null, 2));
+      //Add Jwt to Full Wallet Json to generate the Full Wallet request Jwt
+      FullWalletJson.jwt = response.jwt;
+      //Enable Full Wallet request button
+      document.getElementById("full").disabled = false;
+    }
+    
+    //Callback for Masked Wallet failure
+    function maskedWalletFailure(response){
+      updateStatus("Masked Wallet failure check the browser console");
+      console.log(response);
+    }
+    
+    //Callback for Wallet button generation
+    function buttonReady(params) {
+      if (params.status == "SUCCESS") {
+         if (document.readyState === "interactive" || document.readyState === "complete") {
+            document.getElementById("wallet-button-holder")
+              .appendChild(params.walletButtonElement);
+         } else {
+             document.addEventListener("DOMContentLoaded", function() {
+               document.getElementById("wallet-button-holder")
+                  .appendChild(params.walletButtonElement);
+             });
+         }
+      }
+    }
+    
+    //********Full Wallet Request related functions********
+    //Handle the Jwt returned from the server and request the Full Wallet
+    function handleFullWalletJwt(data){
+      updateStatus("Received Full Wallet Jwt, now requesting Full Wallet");
+      display("jwt=" + data);
+      //Request Full Wallet
+      google.wallet.online.requestFullWallet({
+        jwt : data,
+        success : fullWalletSuccess,
+        failure : fullWalletFailure
+      });
+    }
+    
+    //Callback for Full Wallet success
+    function fullWalletSuccess(response){
+      updateStatus("Full Wallet success you can proceed to the Transaction Status Notification");
+      display("fullwallet=" + JSON.stringify(response, null, 2));
+      TransactionStatusJson.jwt = response.jwt;
+      document.getElementById("transaction").disabled = false;
+    }
+    
+    //Callback for Full Wallet failure
+    function fullWalletFailure(response){
+      updateStatus("Full Wallet failure check the browser console");
+      console.log(response);
+    }
+    
+    //********Transaction Status Notification related functions********
+    //Handle the Jwt returned fromt he server and notify Wallet
+    function handleTransactionStatusJwt(data){
+      updateStatus("Received Transaction Status Notification Jwt, now sending to Google");
+      display("jwt=" + data);
+      //Notify Wallet
+      google.wallet.online.notifyTransactionStatus({
+        jwt : data
+      });
+      updateStatus("Transaction complete");
+    }
+    
+    //Helper function to display request and responses
+    function display(content){
+      document.getElementById("output").innerText = content;
+    }
+    
+    //Helper function to display current status
+    function updateStatus(status){
+      document.getElementById("status").innerText = status;
+    }
+    
+    //Initializes the button actions
+    function initApp(){
+      //using JQuery for Ajax posts
+      document.getElementById("masked").addEventListener("click",
+        function() {
+          $.post("masked-wallet", JSON.stringify(MaskedWalletJson), handleMaskedWalletJwt);
+          updateStatus("Requesting Masked Wallet JWT from server");
+        });
+      document.getElementById("full").addEventListener("click",
+        function() {
+          $.post("full-wallet", JSON.stringify(FullWalletJson), handleFullWalletJwt);
+          updateStatus("Requesting Full Wallet JWT from server");
+        });
+      document.getElementById("transaction").addEventListener("click",
+        function(){
+          $.post("notify-transaction-status", JSON.stringify(TransactionStatusJson), handleTransactionStatusJwt);
+          updateStatus("Requesting Transaction Status Notification JWT from server");
+        });
+    }
+    //Wait for dom before initializing buttons
+    if (document.readyState === "interactive" ||
+          document.readyState === "complete") {
+    initApp();
+    }
+    // If it"s not ready add an event handler to intialize it when ready
+    else {
+      document.addEventListener("DOMContentLoaded", function() {
+        initApp();
+      });
+    }
+    
+    </script>
+ </head>
+ <body>
+   <button id="masked">Masked Wallet Request</button>
+    <button id="full" disabled>Full Wallet Request</button>
+    <button id="transaction" disabled>Transaction Status Notification</button>
+    <div id="status"></div>
+    <div id="wallet-button-holder"></div>
+    <pre id="output" style="width:600px;word-wrap:break-word;"></pre>
+ </body>
+</html>
+
