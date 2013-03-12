@@ -11,6 +11,10 @@ To Setup the sample, edit src/main/java/com/instantbuy/quickstart/Config.java
 * Given the Sandbox environment, enter values for SANDBOX_MERCHANT_ID and SANDBOX_MERCHANT_SECRET
 * Enter the OAUTH_CLIENT_ID and save the file.
 
+Next, enter the OAUTH_CLIENT_ID in ./src/main/webapp/index.html
+var OauthClientId = "....";
+
+
 ### Build
 To build, run
 
