@@ -156,11 +156,11 @@ p{
   font-size:12px;
 }
   </style>
-  <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
   <script type="text/javascript"
   src="https://wallet-web.sandbox.google.com/online/v2/merchant/merchant.js"></script>
   <script type="text/javascript">
-var OauthClientId = "Client Id";
+var OauthClientId = "ENTER_CLIENTID_HERE";
 
 //Information for Masked Wallet request
 var MaskedWalletJson = {
@@ -202,11 +202,18 @@ google.wallet.online.authorize({
   },
 })
 
+function decodeJwt(data) {
+    return JSON.stringify(JSON.parse(atob(data.split('.')[1])), null, 2);
+}
+
 //********Masked Wallet Request related functions********
 //Handle the Jwt returned from the server and create the Wallet button
 
 function handleMaskedWalletJwt(data) {
-  display("Received Masked Wallet JWT\n\n" + data);
+  display("Received Masked Wallet JWT\n\n" + data +
+          "\n\nDecoded Masked Wallet request JWT:\n\n" +
+          decodeJwt(data));
+
   display("Generating Google Wallet Buy button");
   google.wallet.online.createWalletButton({
     jwt: data,
@@ -258,7 +265,8 @@ function addButton(button) {
 //Handle the Jwt returned from the server and request the Full Wallet
 
 function handleFullWalletJwt(data) {
-  display("Received Full Wallet JWT, requesting Full Wallet\n\n" + data);
+  display("Received Full Wallet request JWT, requesting Full Wallet\n\n" + data +
+          "\n\nDecoded Full Wallet request:\n\n" + decodeJwt(data));
   //Request Full Wallet
   google.wallet.online.requestFullWallet({
     jwt: data,
@@ -307,6 +315,18 @@ function display(content) {
   var container = document.getElementById("output");
   container.scrollTop = container.scrollHeight;
 }
+
+//function display(content, jwt) {
+//    var message = document.createElement("pre");
+//    message.className = "log_message";
+//    message.innerText = content;
+//    document.getElementById("output").appendChild(message);
+//    message.addEventListener("click", function(data) {
+//       message.innerText += "\n\n" + decodeJwt(data);
+//    });
+//    var container = document.getElementById("output");
+//    container.scrollTop = container.scrollHeight;
+//}
 
 var ani = {
   easing: 'swing',
@@ -362,7 +382,7 @@ function initApp() {
 
   function() {
     $.post("masked-wallet", JSON.stringify(MaskedWalletJson), handleMaskedWalletJwt);
-    display("Requesting Masked Wallet JWT from server");
+    display("Requesting Masked Wallet request JWT from server");
   });
   document.getElementById("full").addEventListener("click",
 

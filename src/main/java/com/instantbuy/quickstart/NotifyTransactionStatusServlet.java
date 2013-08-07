@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.security.InvalidKeyException;
 import java.security.SignatureException;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -76,8 +77,9 @@ public class NotifyTransactionStatusServlet extends HttpServlet {
       // Get the full wallet jwt and create a NotifyTransactionStatus
       JwtRequests.TransactionStatusContainer notifyStatus = JwtRequests.newTransactionStatusBuilder()
           .setIss(Config.getMerchantId())
-          .setIat(System.currentTimeMillis()/1000)
-          .setExp(clock.now().plus(JwtGenerator.EXPIRATION_DELTA).getMillis()/1000)
+          .setIat(TimeUnit.SECONDS.convert(System.currentTimeMillis(), TimeUnit.MILLISECONDS))
+          .setExp(TimeUnit.SECONDS.convert(clock.now().plus(JwtGenerator.EXPIRATION_DELTA)
+              .getMillis(), TimeUnit.MILLISECONDS))
           .setRequest(TransactionStatusNotification.newBuilder()
             .setGoogleTransactionId(jwtResponse.getResponse().getGoogleTransactionId())
             .setStatus(TransactionStatusNotification.Status.SUCCESS)
