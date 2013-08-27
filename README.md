@@ -1,5 +1,5 @@
 App Engine Java Quick Start Sample for Instant Buy API
-Copyright (C) 2010-2012 Google Inc.
+Copyright (C) 2010-2013 Google Inc.
 
 ## Quick Start sample for Instant Buy API
 
@@ -33,3 +33,4 @@ For further information, consult the [Java App Engine](https://developers.google
 To see all the available goals for the App Engine plugin, run
 
     mvn help:describe -Dplugin=appengine
+
