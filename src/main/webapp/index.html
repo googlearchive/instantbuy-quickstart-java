@@ -1,5 +1,6 @@
 <html>
 <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>Instant Buy Quick Start Demo</title>
   <style>
   html, body{
@@ -159,6 +160,8 @@ p{
   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
   <script type="text/javascript"
   src="https://wallet-web.sandbox.google.com/online/v2/merchant/merchant.js"></script>
+
+
   <script type="text/javascript">
 var OauthClientId = "ENTER_CLIENTID_HERE";
 
@@ -199,7 +202,7 @@ google.wallet.online.authorize({
   "clientId": OauthClientId,
   "callback": function(tokenObj) {
     console.log(tokenObj);
-  },
+  }
 })
 
 function decodeJwt(data) {
@@ -230,7 +233,7 @@ function maskedWalletSuccess(response) {
   //Add Jwt to Full Wallet Json to generate the Full Wallet request Jwt
   FullWalletJson.jwt = response.jwt;
   //Enable Full Wallet request button
-  document.getElementById("full").disabled = false;
+  $("#full")[0].disabled = false;
   toggleNextStep();
 }
 
@@ -255,7 +258,7 @@ function buttonReady(params) {
 
 function addButton(button) {
   display("Generation complete, adding Buy button to page");
-  var holder = document.getElementById("wallet-button-holder");
+  var holder = $("#wallet-button-holder")[0];
   if (holder.hasChildNodes()) holder.removeChild(holder.firstChild);
   holder.appendChild(button);
   toggleNextStep();
@@ -311,8 +314,8 @@ function display(content) {
   var message = document.createElement("pre");
   message.className = "log_message";
   message.innerText = content;
-  document.getElementById("output").appendChild(message);
-  var container = document.getElementById("output");
+  $("#output")[0].appendChild(message);
+  var container = $("#output")[0];
   container.scrollTop = container.scrollHeight;
 }
 
@@ -378,15 +381,11 @@ function toggleNextStep() {
 
 function initApp() {
   //using JQuery for Ajax posts
-  document.getElementById("masked").addEventListener("click",
-
-  function() {
+  $("#masked").click(function() {
     $.post("masked-wallet", JSON.stringify(MaskedWalletJson), handleMaskedWalletJwt);
     display("Requesting Masked Wallet request JWT from server");
   });
-  document.getElementById("full").addEventListener("click",
-
-  function() {
+  $("#full").click(function() {
     $.post("full-wallet", JSON.stringify(FullWalletJson), handleFullWalletJwt);
     display("Requesting Full Wallet JWT from server");
   });
@@ -424,7 +423,7 @@ else {
         </h2>
         <div class="content">
           <p>
-            The first step is generating a Masked Wallet JWT on the server representing the customer information you're requesting and their estimated order total. In this demo we're making an AJAX request for the JWT and using it to create the Google Wallet Buy button.
+            The first step is generating a Masked Wallet JWT on the server representing the customer information you are requesting and their estimated order total. In this demo we're making an AJAX request for the JWT and using it to create the Google Wallet Buy button.
           </p><button id="masked" class="kd-button-submit button_size">Create</button>
         </div>
       </div>
