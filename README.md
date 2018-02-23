@@ -1,5 +1,7 @@
-App Engine Java Quick Start Sample for Instant Buy API
-Copyright (C) 2010-2013 Google Inc.
+# Project status
+![status: inactive](https://img.shields.io/badge/status-inactive-red.svg)
+
+This project is no longer actively maintained, and remains here as an archive of this work.
 
 ## Quick Start sample for Instant Buy API
 
